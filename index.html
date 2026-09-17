@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 1: Nivelamento Digital & Introdução à Informática</title>
+    <style>
+        /* Variáveis de Tema e Glassmorphism Esmaecido */
+        :root {
+            --bg-deep: #060911;
+            --bg-gradient-1: #0a0f1d;
+            --bg-gradient-2: #023859;
+            --glass-bg: rgba(11, 18, 32, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+        }
+
+        /* Background Dinâmico (Esferas) */
+        .bg-glow-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-deep) 100%);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.25;
+            animation: floatOrb 16s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 750px;
+            height: 750px;
+            background: var(--bg-gradient-2);
+            top: -30%;
+            left: -20%;
+        }
+
+        .orb-2 {
+            width: 750px;
+            height: 750px;
+            background: #034b75;
+            bottom: -35%;
+            right: -20%;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(50px) scale(1.04); }
+        }
+
+        /* Estrutura do Slider */
+        .slider-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            transition: transform 1.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        section.slide {
+            min-width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Estilo Vidro Fosco Esmaecido (Glassmorphism Dark) */
+        .glass-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1.6px solid var(--glass-border);
+            border-top: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 30px 40px -12px rgba(0, 0, 0, 0.6),
+                        inset 0 1px 0 0 var(--glass-shine);
+            max-width: 980px;
+            width: 100%;
+            max-height: 75vh;
+            overflow-y: auto;
+            animation: fadeIn 2s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) transparent;
+        }
+
+        .glass-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .glass-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .glass-box::-webkit-scrollbar-thumb {
+            background-color: rgba(56, 189, 248, 0.3);
+            border-radius: 10px;
+        }
+        .glass-box::-webkit-scrollbar-thumb:hover {
+            background-color: var(--accent);
+        }
+
+        /* Tipografia */
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; text-align: center; font-weight: 900; letter-spacing: -0.02em; }
+        h2 { font-size: 1.8rem; color: var(--accent); border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; font-weight: 800; display: flex; align-items: center; gap: 10px; margin-top: 0; }
+        h3 { font-size: 1.15rem; margin-bottom: 0.5rem; color: #e2e8f0; font-weight: 700; }
+        p { font-size: 1rem; line-height: 1.5; color: var(--text-muted); margin: 0.5rem 0; }
+        
+        /* Imagens Ilustrativas */
+        .slide-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 0.8rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .timeline-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Flex Layouts */
+        .flex-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .flex-col {
+            flex: 1;
+            min-width: 240px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 1.25rem;
+            border-radius: 16px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .flex-col:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Grid para Linha do Tempo e Windows */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .card-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 0.8rem;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .card-item:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent);
+        }
+
+        .card-number {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        /* Ícones e Atalhos */
+        .icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+        .shortcut {
+            background: rgba(56, 189, 248, 0.08);
+            padding: 3px 7px;
+            border-radius: 6px;
+            font-family: monospace;
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Footer / Assinatura */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        /* Controles de Navegação */
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        button.nav-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        button.nav-btn:hover { 
+            background: rgba(56, 189, 248, 0.15); 
+            border-color: var(--accent);
+            transform: scale(1.08); 
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* Timer interativo */
+        .timer-display {
+            font-size: 3.2rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--accent);
+            margin: 0.5rem 0 1.5rem 0;
+            font-family: monospace;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Dinâmico com Esferas -->
+    <div class="bg-glow-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="slider-container" id="slider">
+
+        <!-- Slide 1: Capa -->
+        <section class="slide">
+            <div class="glass-box" style="text-align: center;">
+                <span class="icon" style="font-size: 4rem;">💻</span>
+                <h1>Aula 1: Nivelamento Digital</h1>
+                <p style="color: var(--accent); font-size: 1.2rem; font-weight: 500;">Conceitos Fundamentais, Operações Essenciais & Produtividade</p>
+            </div>
+        </section>
+
+        <!-- Slide 2: O que é Informática? -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>💡 O que é Informática?</h2>
+                <div class="flex-row">
+                    <div class="flex-col" style="flex: 1.2;">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600" alt="Processamento de Dados" class="slide-img">
+                        <h3>Informação + Automática</h3>
+                        <p>Campo que estuda o <strong>processamento, armazenamento e transmissão de informações</strong> por meio de dispositivos eletrônicos e sistemas computacionais — um pilar indispensável na sociedade moderna.</p>
+                    </div>
+                    <div class="flex-col">
+                        <h3>Pilares Principais:</h3>
+                        <p>🔹 <strong>Entrada:</strong> Coleta de dados (teclado, sensor, toque).</p>
+                        <p>🔹 <strong>Processamento:</strong> Transformação de dados brutos em informação útil.</p>
+                        <p>🔹 <strong>Armazenamento:</strong> Salvar dados em memória para uso futuro.</p>
+                        <p>🔹 <strong>Saída:</strong> Exibição do resultado (tela, som, impressão).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Hardware e Software -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>⚙️ Tudo é Hardware e Software</h2>
+                <div class="flex-row">
+                    <div class="flex-col">
+                        <img src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600" alt="Hardware do Computador" class="slide-img">
+                        <h3>🛠️ Hardware</h3>
+                        <p><strong>Componentes físicos e tangíveis</strong> do computador (o que você pode tocar).</p>
+                        <p><em>Exemplos:</em> Gabinete, mouse, teclado, monitor, Processador, Memória RAM, Placa de Vídeo, HD & SSD.</p>
+                    </div>
+                    <div class="flex-col">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600" alt="Código de Software" class="slide-img">
+                        <h3>💾 Software</h3>
+                        <p><strong>Programas e instruções</strong> digitais que fazem o hardware funcionar.</p>
+                        <p><em>Exemplos:</em></p>
+                        <p>• <strong>Sistema Operacional:</strong> Windows 11</p>
+                        <p>• <strong>Aplicações:</strong> Word, Chrome</p>
+                        <p>• <strong>Utilitários:</strong> CCleaner, Windows Defender</p>
+                        <p>• <strong>Programação:</strong> VS Code, Python</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Hardware e Periféricos -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>🖥️ Hardware e Periféricos Básicos</h2>
+                <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+                    <div class="card-item" style="text-align: left;">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600" alt="Placa-mãe" class="timeline-img">
+                        <h3>🔌 Placa-Mãe</h3>
+                        <p>Conecta e une todos os componentes do computador em um só circuito.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <img src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=600" alt="Processador CPU" class="timeline-img">
+                        <h3>🧠 Processador (CPU)</h3>
+                        <p>O "cérebro" do computador: executa todos os cálculos e tarefas do sistema.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMHdNpKwBbO-353JYsd6PcHeVswQ__8uAS3FcTIvYGh4ECVd_KfgXMQJM&s=10" alt="Memória RAM" class="timeline-img">
+                        <h3>⚡ Memória RAM</h3>
+                        <p>Armazena dados temporários para acesso ultrarrápido do sistema em uso.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <img src="https://s2-techtudo.glbimg.com/T3sUmSQ1Y4x6WfomwKn3T12KJmQ=/0x0:620x430/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/Z/C/JI2k1aTO6HLaAC3a3A2w/2012-12-20-conheca-opcoes-de-placas-de-video-de-acordo-com-seu-perfil-e-bolso.jpg" alt="Placa de Vídeo" class="timeline-img">
+                        <h3>🖼️ Placa de Vídeo</h3>
+                        <p>Gerencia e processa a exibição de imagens, vídeos e gráficos na tela.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <img src="https://img.odcdn.com.br/wp-content/uploads/2018/05/20180522153937.jpg" alt="HD e SSD" class="timeline-img">
+                        <h3>💽 HD e SSD</h3>
+                        <p>Armazenamento permanente para arquivos, fotos e o sistema operacional.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVT3T9wg6c0Xar86Oe8esenQuLBNnMYhi9KT1NKyOnNpkIE8F-fmysYx4&s=10" alt="Periféricos" class="timeline-img">
+                        <h3>⌨️ Periféricos</h3>
+                        <p><strong>Entrada:</strong> Teclado, mouse. <strong>Saída:</strong> Monitor, som. <strong>Armazenamento:</strong> Pendrive.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Breve História da Informática -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>📜 Breve História da Informática</h2>
+                <div class="grid-cards">
+                    <div class="card-item">
+                        <span class="card-number">1. ANTIGUIDADE</span>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSb9tz5sdIOwnHYnlv0cHhk5qYUj1AxGUkmBXCeP8zdQ&s=10" alt="Ábaco" class="timeline-img">
+                        <h3>🧮 Ábaco</h3>
+                        <p>Primeiro dispositivo de cálculo da história da humanidade.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">2. 1936</span>
+                        <img src="https://litci.org/pt/wp-content/uploads/2021/06/Wilson.jpeg" alt="Alan Turing" class="timeline-img">
+                        <h3>⚙️ Máquina de Turing</h3>
+                        <p>Base teórica essencial para a criação dos computadores modernos.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">3. 1945</span>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEDsLWOB3fbo7VGIEeLiugX9-RAt_AjqdQvUNzIeI_SxIHEiDLR97ucr8t&s=10" alt="ENIAC" class="timeline-img">
+                        <h3>🏢 ENIAC</h3>
+                        <p>Primeiro computador eletrônico da história — pesava 27 toneladas.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">4. ANOS 80/90</span>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXWT-R2Q1UmtahzKMYYuSnbTzAf3Ny78WXptBtzsI6_bREKq-GFmUzmpYY&s=10" alt="Computador Pessoal" class="timeline-img">
+                        <h3>🖥️ Computadores Pessoais</h3>
+                        <p>Popularização massiva da informática nas empresas e lares.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">5. HOJE</span>
+                        <img src="https://sigmoidal.ai/wp-content/uploads/2022/06/drone_object_detection.png" alt="Tecnologia Atual" class="timeline-img">
+                        <h3>🤖 Era Conectada</h3>
+                        <p>Inteligência Artificial, drones, veículos autônomos e impressão 3D.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: História do Windows -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>🪟 Evolução do Windows</h2>
+                <p style="text-align: center; margin-bottom: 1rem;">Surgiu em 1985 como interface gráfica sobre o MS-DOS e evoluiu para se tornar o sistema operacional mais utilizado no mundo.</p>
+                <div class="grid-cards">
+                    <div class="card-item">
+                        <span class="card-number">01</span>
+                        <img src="https://upload.wikimedia.org/wikipedia/pt/9/90/Am_windows95_desktop.png?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original" alt="Windows 95" class="timeline-img">
+                        <h3>Windows 95</h3>
+                        <p>Revolucionou ao introduzir a <strong>Barra de Tarefas</strong> e o <strong>Menu Iniciar</strong>.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">02</span>
+                        <img src="https://uladzimer.vivaldi.net/wp-content/uploads/sites/20116/2020/05/Windows_XP_SP3-1-1024x768.png" alt="Windows XP" class="timeline-img">
+                        <h3>Windows XP</h3>
+                        <p>Famoso pela extrema estabilidade e interface amigável e colorida.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">03</span>
+                        <img src="https://coisasdavida636701566.wordpress.com/wp-content/uploads/2025/09/1000874610.jpg" alt="Windows 7" class="timeline-img">
+                        <h3>Windows 7</h3>
+                        <p>Consolidou alto desempenho com a estética simplificada e visual Aero Glass.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">04</span>
+                        <img src="https://www.mundoconectado.com.br/wp-content/uploads/2021/01/windows_10_iniciar.jpg" alt="Windows 10" class="timeline-img">
+                        <h3>Windows 10</h3>
+                        <p>Trouxe atualizações automáticas contínuas, múltiplos desktops e Cortana.</p>
+                    </div>
+                    <div class="card-item">
+                        <span class="card-number">05</span>
+                        <img src="https://blog.bbbaterias.com.br/wp-content/uploads/2024/06/WIN_CML_Start_Dark_16x9_en-US.png?utm_source=blog&utm_campaign=link-conteudo-post&utm_content=bnot" alt="Windows 11" class="timeline-img">
+                        <h3>Windows 11</h3>
+                        <p>Design moderno centralizado, maior segurança e alto desempenho.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Windows 10 Operacional -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>🪟 Dominando o Windows na Prática</h2>
+                <div class="flex-row">
+                    <div class="flex-col">
+                        <h3>Funcionalidades Básicas</h3>
+                        <p><strong>Menu Iniciar:</strong> Central de busca de programas, configurações e arquivos.</p>
+                        <p><strong>Barra de Tarefas:</strong> Fica embaixo; fixa os programas mais usados do dia a dia.</p>
+                        <p><strong>Explorador de Arquivos:</strong> Onde moram suas pastas, documentos e downloads.</p>
+                    </div>
+                    <div class="flex-col">
+                        <h3>⭐ Atalhos Fundamentais</h3>
+                        <p><span class="shortcut">Win</span> Abre o Menu Iniciar instantaneamente.</p>
+                        <p><span class="shortcut">Win + E</span> Abre o Explorador de Arquivos.</p>
+                        <p><span class="shortcut">Win + D</span> Minimiza tudo e mostra a Área de Trabalho limpa.</p>
+                        <p><span class="shortcut">Alt + Tab</span> Alterna rapidamente entre janelas abertas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Elementos de Trabalho no Windows -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>💼 Elementos da Área de Trabalho</h2>
+                <div class="flex-row">
+                    <div class="flex-col">
+                        <h3>📌 Ícones</h3>
+                        <p>Atalhos visuais diretos para abrir programas, pastas e arquivos rapidamente.</p>
+                    </div>
+                    <div class="flex-col">
+                        <h3>📊 Barra de Tarefas</h3>
+                        <p>Contém o Botão Iniciar, barra de pesquisa, ícones fixados e programas em execução.</p>
+                    </div>
+                    <div class="flex-col">
+                        <h3>⚙️ Acesso Rápido</h3>
+                        <p>Painel no canto inferior direito para Wi-Fi, volume, bateria, relógio e notificações.</p>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; text-align: center;">
+                    <p style="color: var(--accent); margin: 0; font-size: 1.1rem;">💡 <strong>Super Dica:</strong> Use o atalho <span class="shortcut">Windows + E</span> para abrir o Explorador de Arquivos em qualquer momento!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Teclas Especiais do Teclado -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>⌨️ Desvendando o Teclado</h2>
+                <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <div class="card-item" style="text-align: left;">
+                        <h3><span class="shortcut">Shift</span> Maiúsculas & Símbolos</h3>
+                        <p>Segure para digitar letras maiúsculas temporárias ou símbolos superiores das teclas (ex: !, @, #).</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <h3><span class="shortcut">Ctrl</span> Atalhos de Sistema</h3>
+                        <p>Tecla base para comandos universais (Ex: <span class="shortcut">Ctrl + C</span>, <span class="shortcut">Ctrl + V</span>).</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <h3><span class="shortcut">Alt</span> / <span class="shortcut">AltGr</span> Menus & Caracteres</h3>
+                        <p><strong>Alt:</strong> Ativa menus. <strong>AltGr:</strong> Acessa o 3º símbolo da tecla (ex: @, ², ³).</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <h3><span class="shortcut">Caps Lock</span> Maiúsculas Fixas</h3>
+                        <p>Trava o teclado para digitar permanentemente em LETRAS MAIÚSCULAS.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <h3><span class="shortcut">Backspace</span> / <span class="shortcut">Delete</span> Apagar</h3>
+                        <p><strong>Backspace:</strong> Apaga à esquerda. <strong>Delete:</strong> Apaga à direita ou exclui arquivos selecionados.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <h3><span class="shortcut">Enter</span> Confirmar & Linha</h3>
+                        <p>Utilizado para enviar mensagens, confirmar ações ou pular para uma nova linha no texto.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 10: Google Chrome -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>🌐 Navegador: Google Chrome</h2>
+                <div class="flex-row">
+                    <div class="flex-col">
+                        <h3>Funcionalidades Básicas</h3>
+                        <p><strong>Abas (Tabs):</strong> Permitem abrir múltiplos sites na mesma janela.</p>
+                        <p><strong>Barra de Endereço:</strong> Serve para digitar links diretos ou pesquisar no Google.</p>
+                        <p><strong>Favoritos (⭐):</strong> Salva seus sites preferidos para acesso rápido.</p>
+                    </div>
+                    <div class="flex-col">
+                        <h3>⭐ Atalhos</h3>
+                        <p><span class="shortcut">Ctrl + T</span> Abre uma nova aba limpa.</p>
+                        <p><span class="shortcut">Ctrl + W</span> Fecha a aba atual.</p>
+                        <p><span class="shortcut">Ctrl + Shift + T</span> Reabre a última aba fechada por engano (Salva-vidas!).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Bloco de Notas -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>📝 Bloco de Notas (Notepad)</h2>
+                <div class="flex-row">
+                    <div class="flex-col">
+                        <h3>O Essencial, Sem Frescuras</h3>
+                        <p>A ferramenta mais rápida do sistema para anotar textos simples sem formatação.</p>
+                        <p>Excelente para rascunhos rápidos ou para limpar formatações de textos copiados da internet.</p>
+                    </div>
+                    <div class="flex-col">
+                        <h3>⭐ Atalhos</h3>
+                        <p><span class="shortcut">Ctrl + N</span> Cria um novo documento em branco.</p>
+                        <p><span class="shortcut">Ctrl + S</span> Salva o arquivo de texto.</p>
+                        <p><span class="shortcut">F5</span> Insere automaticamente a Data e Hora atual no texto.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: Atalhos Gerais Universais (Ajustado) -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>⌨️ Atalhos Universais</h2>
+                <div class="grid-cards" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                    <div class="card-item" style="text-align: left;">
+                        <span class="icon" style="font-size: 1.8rem; margin-bottom: 6px;">✂️</span>
+                        <h3><span class="shortcut">Ctrl + C</span> / <span class="shortcut">Ctrl + V</span></h3>
+                        <p><strong>Copiar e Colar:</strong> Funciona em navegadores, pastas, documentos e editores de código!</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <span class="icon" style="font-size: 1.8rem; margin-bottom: 6px;">🔙</span>
+                        <h3><span class="shortcut">Ctrl + Z</span></h3>
+                        <p><strong>Desfazer:</strong> Apagou sem querer ou errou uma ação? É a sua viagem no tempo instantânea.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <span class="icon" style="font-size: 1.8rem; margin-bottom: 6px;">🔍</span>
+                        <h3><span class="shortcut">Ctrl + F</span></h3>
+                        <p><strong>Localizar:</strong> Encontra rapidamente uma palavra específica num site longo ou arquivo.</p>
+                    </div>
+                    <div class="card-item" style="text-align: left;">
+                        <span class="icon" style="font-size: 1.8rem; margin-bottom: 6px;">💾</span>
+                        <h3><span class="shortcut">Ctrl + S</span></h3>
+                        <p><strong>Salvar:</strong> Crie o hábito constante de salvar para nunca perder seus trabalhos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: Troubleshooting -->
+        <section class="slide">
+            <div class="glass-box">
+                <h2>🛠️ Troubleshooting no Cotidiano</h2>
+                <div class="flex-row">
+                    <div class="flex-col">
+                        <p><strong>Caso 1: O Pânico da Aba Fechada</strong><br>
+                        <em>Situação:</em> Fechou sem querer a página em que estava trabalhando.<br>
+                        <em>Solução:</em> Pressione <span class="shortcut">Ctrl + Shift + T</span> no Chrome.</p>
+                    </div>
+                    <div class="flex-col">
+                        <p><strong>Caso 2: A Reunião Surpresa</strong><br>
+                        <em>Situação:</em> Precisa anotar informações rápidas com urgência.<br>
+                        <em>Solução:</em> <span class="shortcut">Win</span> > digite "Bloco" > <span class="shortcut">Enter</span> para abrir o Bloco de Notas instantaneamente.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Controles de Navegação -->
+    <div class="controls">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">❮</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">❯</button>
+    </div>
+
+    <footer>
+        Tecnologia para o Mercado de Trabalho | Instrutor: Pedro Victor Sousa e Silva
+    </footer>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function updateSlider() {
+            const slider = document.getElementById('slider');
+            slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) {
+                currentSlide = 0;
+            } else if (currentSlide >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            }
+            updateSlider();
+        }
+
+        // Navegação pelo teclado (setas esquerda/direita)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+        });
+    </script>
+</body>
+</html>
