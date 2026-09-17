@@ -133,7 +133,16 @@
         h3 { font-size: 1.15rem; margin-bottom: 0.5rem; color: #e2e8f0; font-weight: 700; }
         p { font-size: 1rem; line-height: 1.5; color: var(--text-muted); margin: 0.5rem 0; }
         
-        /* Imagens Ilustrativas */
+        /* Imagens Ilustrativas com cursor indicando zoom */
+        .slide-img, .timeline-img {
+            cursor: zoom-in;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .slide-img:hover, .timeline-img:hover {
+            opacity: 0.9;
+            transform: scale(1.01);
+        }
+
         .slide-img {
             width: 100%;
             height: 140px;
@@ -151,6 +160,73 @@
             border-radius: 8px;
             margin-bottom: 0.5rem;
             border: 1px solid var(--glass-border);
+        }
+
+        /* Modal Lightbox para Visualização Original e Zoom Dinâmico */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(6, 9, 17, 0.92);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            overflow: auto;
+            cursor: zoom-out;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: none;
+            max-height: none;
+            width: auto;
+            height: auto;
+            object-fit: none;
+            transition: transform 0.1s ease-out;
+            transform-origin: center center;
+            cursor: zoom-in;
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .image-modal img.zoomed {
+            transform: scale(1.5);
+            cursor: grab;
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 25px;
+            right: 35px;
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+            background: rgba(0,0,0,0.6);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(56, 189, 248, 0.3);
+            border-color: var(--accent);
         }
 
         /* Flex Layouts */
@@ -176,7 +252,7 @@
             border-color: rgba(255, 255, 255, 0.08);
         }
 
-        /* Grid para Linha do Tempo e Windows */
+        /* Grid para Cards */
         .grid-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -234,7 +310,7 @@
             letter-spacing: 0.05em;
         }
 
-        /* Controles de Navegação */
+        /* Controles de Navegação (Subidos para 60px) */
         .controls {
             position: absolute;
             bottom: 60px;
@@ -268,17 +344,6 @@
             box-shadow: 0 0 20px var(--accent-glow);
         }
 
-        /* Timer interativo */
-        .timer-display {
-            font-size: 3.2rem;
-            font-weight: 700;
-            text-align: center;
-            color: var(--accent);
-            margin: 0.5rem 0 1.5rem 0;
-            font-family: monospace;
-            text-shadow: 0 0 20px var(--accent-glow);
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -291,6 +356,12 @@
     <div class="bg-glow-container">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Modal de Visualização Original e Zoom Dinâmico -->
+    <div id="imageModal" class="image-modal">
+        <span id="modalClose" class="modal-close">&times;</span>
+        <img id="modalImg" src="" alt="Visualização em tamanho original">
     </div>
 
     <div class="slider-container" id="slider">
@@ -588,7 +659,7 @@
             </div>
         </section>
 
-        <!-- Slide 12: Atalhos Gerais Universais (Ajustado) -->
+        <!-- Slide 12: Atalhos Gerais Universais -->
         <section class="slide">
             <div class="glass-box">
                 <h2>⌨️ Atalhos Universais</h2>
@@ -649,6 +720,7 @@
     </footer>
 
     <script>
+        // Navegação de Slides
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
@@ -670,12 +742,98 @@
 
         // Navegação pelo teclado (setas esquerda/direita)
         document.addEventListener('keydown', (e) => {
+            // Se o modal de imagem estiver aberto, não muda de slide com as setas
+            if (document.getElementById('imageModal').classList.contains('active')) return;
+
             if (e.key === 'ArrowRight') {
                 changeSlide(1);
             } else if (e.key === 'ArrowLeft') {
                 changeSlide(-1);
             }
         });
+
+        // Lógica de Lightbox, Tamanho Original e Zoom Dinâmico 150% (Desktop & Mobile)
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        const modalClose = document.getElementById('modalClose');
+        const presentationImages = document.querySelectorAll('.slide img');
+
+        // Abrir modal com a imagem em seu tamanho original
+        presentationImages.forEach(img => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                modalImg.src = img.src;
+                modalImg.classList.remove('zoomed');
+                modalImg.style.transformOrigin = 'center center';
+                modal.classList.add('active');
+            });
+        });
+
+        function closeModal() {
+            modal.classList.remove('active');
+            modalImg.classList.remove('zoomed');
+            modalImg.src = '';
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Fechar com tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // Alternar Zoom 150% e acompanhar o mouse/toque ao clicar na imagem ampliada
+        modalImg.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isZoomed = modalImg.classList.contains('zoomed');
+            
+            if (!isZoomed) {
+                modalImg.classList.add('zoomed');
+                updateZoomOrigin(e);
+            } else {
+                modalImg.classList.remove('zoomed');
+                modalImg.style.transformOrigin = 'center center';
+            }
+        });
+
+        function updateZoomOrigin(e) {
+            const rect = modalImg.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            
+            // Suporte adaptado para celulares/tablets (touch)
+            if (e.type && e.type.startsWith('touch') && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+
+            if (clientX !== undefined && clientY !== undefined) {
+                const x = ((clientX - rect.left) / rect.width) * 100;
+                const y = ((clientY - rect.top) / rect.height) * 100;
+                modalImg.style.transformOrigin = `${x}% ${y}%`;
+            }
+        }
+
+        // Acompanhar o movimento do mouse em tempo real quando estiver com zoom ativo
+        modalImg.addEventListener('mousemove', (e) => {
+            if (modalImg.classList.contains('zoomed')) {
+                updateZoomOrigin(e);
+            }
+        });
+
+        // Acompanhar o movimento de toque (arrastar o dedo) em dispositivos móveis
+        modalImg.addEventListener('touchmove', (e) => {
+            if (modalImg.classList.contains('zoomed')) {
+                updateZoomOrigin(e);
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
